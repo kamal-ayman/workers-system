@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\WorkerStoreRequest;
 use App\Services\WorkerService\WorkerLoginService\WorkerLoginService;
+use App\Services\WorkerService\WorkerLoginService\WorkerRegisterService;
 use Illuminate\Http\Request;
 use App\Models\Worker;
 use Validator;
@@ -40,29 +42,30 @@ class WorkerController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:workers',
-            'password' => 'required|string|min:6',
-            'phone' => 'required|string|max:17',
-            'photo' => 'required|image|mimes:jpg,png,jpeg',
-            'location' => 'required|string|min:10',
-        ]);
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        $worker = Worker::create(array_merge(
-                    $validator->validated(),
-                    [
-                        'password' => bcrypt($request->password),
-                        'photo' => $request->file('photo')->store('photos/workers'),
-                    ]
-                ));
-        return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $worker
-        ], 201);
+    public function register(WorkerStoreRequest $request) {
+        return (new WorkerRegisterService())->register($request);
+        // $validator = Validator::make($request->all(), [
+            // 'name' => 'required|string|between:2,100',
+            // 'email' => 'required|string|email|max:100|unique:workers',
+            // 'password' => 'required|string|min:6',
+            // 'phone' => 'required|string|max:17',
+            // 'photo' => 'required|image|mimes:jpg,png,jpeg',
+            // 'location' => 'required|string|min:10',
+        // ]);
+        // if($validator->fails()){
+        //     return response()->json($validator->errors()->toJson(), 400);
+        // }
+        // $worker = Worker::create(array_merge(
+        //             $validator->validated(),
+        //             [
+        //                 'password' => bcrypt($request->password),
+        //                 'photo' => $request->file('photo')->store('photos/workers'),
+        //             ]
+        //         ));
+        // return response()->json([
+        //     'message' => 'User successfully registered',
+        //     'user' => $worker
+        // ], 201);
     }
 
     /**

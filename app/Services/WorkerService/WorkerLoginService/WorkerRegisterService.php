@@ -16,20 +16,27 @@ class WorkerRegisterService {
         }
         return $validator;
     }
-    function store($data) {
-        $worker = $this->model->create($data);
+    function store($data, $request) {
+        $worker = $this->model->create(array_merge(
+            $data->validated(),
+            [
+                'password' => bcrypt($request->password),
+                'photo' => $request->file('photo')->store('photos/workers'),
+            ]
+        ));
         return $worker->email;
     }
     protected function generateToken($email) {
         $token = substr(md5(rand(0, 9).$email.time()), 0, 32);
-        $this->model->verification_token = $token;
-        $worker = $this->model->save();
+        $worker = $this->model->whereEmail($email)->first();
+        $worker->verification_token = $token;
+        $worker->save();
         return $worker;
     }
     function sendEmail($request) {}
     function register($request) {
         $data = $this->validation($request);
-        $email = $this->store($data);
+        $email = $this->store($data, $request);
         $token = $this->generateToken($email);
         $this->sendEmail($request);
         return response()->json([

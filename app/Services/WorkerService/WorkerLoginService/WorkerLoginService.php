@@ -27,6 +27,11 @@ class WorkerLoginService {
         $status = $worker->status;
         return $status;
     }
+    function isVerified($email) {
+        $worker =  $this->model->whereEmail($email)->first();
+        $verified_at = $worker->verified_at;
+        return $verified_at;
+    }
     protected function createNewToken($token){
         return response()->json([
             'access_token' => $token,
@@ -38,7 +43,11 @@ class WorkerLoginService {
     function login($request) {
         $data = $this->validation($request);
         $token = $this->isValidDate($data);
+        $isVerified = $this->isVerified($request->email);
         $status = $this->getStatus($request->email);
+        if ($isVerified == null) {
+            return response()->json(["message"=> "your account is not verified "], 422);
+        }
         if (!$status) {
             return response()->json(['message'=> 'your account is pending'], 422);
         }
