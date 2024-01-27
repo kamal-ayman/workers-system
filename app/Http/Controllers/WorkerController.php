@@ -16,7 +16,7 @@ class WorkerController extends Controller
      * @return void
      */
     public function __construct() {
-        $this->middleware('auth:worker', ['except' => ['login', 'register']]);
+        $this->middleware('auth:worker', ['except' => ['login', 'register', 'verify']]);
     }
     /**
      * Get a JWT via given credentials.
@@ -24,17 +24,6 @@ class WorkerController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(LoginRequest $request){
-    	// $validator = Validator::make($request->all(), [
-        //     'email' => 'required|email',
-        //     'password' => 'required|string|min:6',
-        // ]);
-        // if ($validator->fails()) {
-        //     return response()->json($validator->errors(), 422);
-        // }
-        // if (!$token = auth()->guard('worker')->attempt($validator->validated())) {
-        //     return response()->json(['error' => 'Unauthorized'], 401);
-        // }
-        // return $this->createNewToken($token);
         return (new WorkerLoginService())->login($request);
     }
     /**
@@ -44,29 +33,22 @@ class WorkerController extends Controller
      */
     public function register(WorkerStoreRequest $request) {
         return (new WorkerRegisterService())->register($request);
-        // $validator = Validator::make($request->all(), [
-            // 'name' => 'required|string|between:2,100',
-            // 'email' => 'required|string|email|max:100|unique:workers',
-            // 'password' => 'required|string|min:6',
-            // 'phone' => 'required|string|max:17',
-            // 'photo' => 'required|image|mimes:jpg,png,jpeg',
-            // 'location' => 'required|string|min:10',
-        // ]);
-        // if($validator->fails()){
-        //     return response()->json($validator->errors()->toJson(), 400);
-        // }
-        // $worker = Worker::create(array_merge(
-        //             $validator->validated(),
-        //             [
-        //                 'password' => bcrypt($request->password),
-        //                 'photo' => $request->file('photo')->store('photos/workers'),
-        //             ]
-        //         ));
-        // return response()->json([
-        //     'message' => 'User successfully registered',
-        //     'user' => $worker
-        // ], 201);
     }
+    public function verify($token) {
+        $worker = Worker::whereVerificationToken($token)->first();
+        if (!$worker) {
+            return response()->json([
+                'message'=> 'this token is invalid!'
+                ],401);
+        }
+        $worker->verified_at = now();
+        $worker->save();
+        return response()->json([
+            'message'=> 'your account has been verified!'
+            ],200);
+        // return (new WorkerRegisterService())->register($request);
+    }
+
 
     /**
      * Log the user out (Invalidate the token).

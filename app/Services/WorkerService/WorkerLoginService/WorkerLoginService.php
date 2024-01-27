@@ -45,9 +45,9 @@ class WorkerLoginService {
         $token = $this->isValidDate($data);
         $isVerified = $this->isVerified($request->email);
         $status = $this->getStatus($request->email);
-        if ($isVerified == null) {
-            return response()->json(["message"=> "your account is not verified "], 422);
-        }
+        // if ($isVerified == null) {
+            // return response()->json(["message"=> "your account is not verified "], 422);
+        // }
         if (!$status) {
             return response()->json(['message'=> 'your account is pending'], 422);
         }

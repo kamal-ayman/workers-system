@@ -1,7 +1,10 @@
 <?php
 namespace App\Services\WorkerService\WorkerLoginService;
+use App\Mail\VerificationEmail;
 use App\Models\Worker;
-use Illuminate\Http\Client\Request;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class WorkerRegisterService {
@@ -33,14 +36,28 @@ class WorkerRegisterService {
         $worker->save();
         return $worker;
     }
-    function sendEmail($request) {}
+    function sendEmail($worker) {
+        Mail::to($worker->email)->send(new VerificationEmail($worker));
+    }
     function register($request) {
-        $data = $this->validation($request);
-        $email = $this->store($data, $request);
-        $token = $this->generateToken($email);
-        $this->sendEmail($request);
-        return response()->json([
-            "message"=> "account has been created successfully, check your email!",
-        ]);
+        try {
+            DB::beginTransaction();
+            $data = $this->validation($request);
+            $email = $this->store($data, $request);
+            $worker = $this->generateToken($email);
+            // return response()->json([
+            //     "message"=> $worker,
+            // ]);
+            $this->sendEmail($worker);
+            DB::commit();
+            return response()->json([
+                "message"=> "account has been created successfully, check your email!",
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                "message"=> $e->getMessage() ." ". $e->getLine(),
+            ], 500);
+        }
     }
 }

@@ -14,14 +14,15 @@ class Worker extends Authenticatable implements JWTSubject
      *
      * @var array
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'phone',
-        'photo',
-        'location',
-    ];
+    protected $guarded = [];
+    // protected $fillable = [
+    //     'name',
+    //     'email',
+    //     'password',
+    //     'phone',
+    //     'photo',
+    //     'location',
+    // ];
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -56,4 +57,8 @@ class Worker extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims() {
         return [];
     }
+    // public function posts()
+    // {
+    //     return $this->hasMany(Post::class, 'worker_id');
+    // }
 }
