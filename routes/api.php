@@ -1,5 +1,7 @@
 <?php
 use App\Http\Controllers\{ClientController, WorkerController, AdminController};
+use App\Http\Controllers\AdminDashboard\AdminNotificationController;
+use App\Http\Controllers\AdminDashboard\PostStatusController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('DbBackup')->prefix('auth')->group(function () {
+Route::prefix('auth')->group(function () {
     Route::controller(AdminController::class)->prefix('admin')->group(function ($router) {
         Route::post('/login', 'login');
         Route::post('/register', 'register');
@@ -50,4 +52,30 @@ Route::get('/unauthorized', function () {
 
 Route::controller(PostController::class)->prefix('worker/post')->group(function () {
     Route::post('/add','store')->middleware('auth:worker');
+    Route::get('/index','index')->middleware('auth:admin');
+    Route::get('/approved','approved');
+});
+
+Route::prefix('admin')->middleware('auth:worker')->group(function () {
+    Route::controller(PostStatusController::class)->prefix('post')->group(function () {
+        Route::post('/status','changeStatus');
+    });
+});
+
+Route::controller(AdminNotificationController::class)
+    ->middleware('auth:admin')
+    ->prefix('admin/notificaion')
+    ->group(function ($router) {
+        Route::get('/get-all','indexAll');
+        Route::get('/get-read-all','indexAllRead');
+        Route::get('/get-unread-all','indexAllUnread');
+
+        Route::put('/update-read-all','updateMarkAllAsRead');
+        Route::put('/update-unread-all','updateMarkAllAsUnRead');
+
+        Route::put('/mark-as-read/{id}','markAsRead');
+        Route::put('/mark-as-unread/{id}','markAsUnRead');
+
+        Route::delete('/delete-all','deleteAll');
+        Route::delete('/delete/{id}','delete');
 });

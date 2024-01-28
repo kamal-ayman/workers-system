@@ -9,10 +9,16 @@ class Post extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    // public function worker()
-    // {
-    //     return $this->belongsTo(Worker::class);
-    // }
+    protected $fillable = [
+        "content",
+        'price',
+        'photos.*.',
+        'worker_id'
+    ];
+    public function worker()
+    {
+        return $this->belongsTo(Worker::class);
+    }
 
     // protected $fillable = [
     //     'content',
