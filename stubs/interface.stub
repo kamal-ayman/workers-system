@@ -1,0 +1,8 @@
+<?php
+
+namespace NAME_SPACE;
+
+interface CLASS_NAMEInterface
+{
+
+}
