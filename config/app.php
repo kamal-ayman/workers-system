@@ -168,6 +168,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        
+        App\Providers\CrudRepoProvider::class,
 
         Yousefpackage\LaraBackup\Providers\LaraBackupServiceProvider::class,
         Yousefpackage\LaraBackup\Providers\BackupServiceProvider::class,

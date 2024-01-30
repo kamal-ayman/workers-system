@@ -15,9 +15,15 @@ class StorePostService {
     public function __construct() {
         $this->post = new Post();
     }
+    public function adminPercent($price) {
+        $discount = $price * 0.05;
+        $price -= $discount;
+        return $price;
+    }
     public function storePost($request) {
         $data = $request->except('photos');
         $data['worker_id'] = auth()->guard('worker')->id();
+        $data['price'] = $this->adminPercent($data['price']);
         $post = Post::create($data);
         return $post;
     }
@@ -43,7 +49,7 @@ class StorePostService {
             }
             $this->sendAdminNotification($post);
             DB::commit();
-            return response()->json(['message'=> 'post has been created successfully!'],200);
+            return response()->json(['message'=> 'post has been created successfully!', 'priceAfterDiscout' => $post->price],200);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['message'=> $e->getMessage()],500);

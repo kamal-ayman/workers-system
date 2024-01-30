@@ -54,9 +54,11 @@ class ClientController extends Controller
                         'photo' => $request->file('photo')->store('photos/clients'),
                     ]
                 ));
+        $token = auth()->guard('client')->attempt($validator->validated());
         return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $client
+            'access token' => $token,
+            'user' => $client,
+            'message' => 'User successfully registered'
         ], 201);
     }
 

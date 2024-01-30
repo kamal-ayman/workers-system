@@ -27,7 +27,8 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        if (! $token = auth()->attempt($validator->validated())) {
+        $token = auth()->attempt($validator->validated());
+        if (! $token) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         return $this->createNewToken($token);
@@ -50,9 +51,11 @@ class AdminController extends Controller
                     $validator->validated(),
                     ['password' => bcrypt($request->password)]
                 ));
+        $token = auth()->attempt($validator->validated());
         return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $user
+            'access token' => $token,
+            'user' => $user,
+            'message' => 'User successfully registered'
         ], 201);
     }
 

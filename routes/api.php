@@ -2,6 +2,7 @@
 use App\Http\Controllers\{ClientController, WorkerController, AdminController};
 use App\Http\Controllers\AdminDashboard\AdminNotificationController;
 use App\Http\Controllers\AdminDashboard\PostStatusController;
+use App\Http\Controllers\ClientOrderController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,7 @@ Route::prefix('auth')->group(function () {
         Route::get('/user-profile', 'userProfile');
     });
 });
+Route::middleware('auth:worker')->get('worker/orders/pending', [ClientOrderController::class, 'workerOrder']);
 
 Route::get('/unauthorized', function () {
     return response()->json([
@@ -56,7 +58,7 @@ Route::controller(PostController::class)->prefix('worker/post')->group(function 
     Route::get('/approved','approved');
 });
 
-Route::prefix('admin')->middleware('auth:worker')->group(function () {
+Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::controller(PostStatusController::class)->prefix('post')->group(function () {
         Route::post('/status','changeStatus');
     });
@@ -79,3 +81,10 @@ Route::controller(AdminNotificationController::class)
         Route::delete('/delete-all','deleteAll');
         Route::delete('/delete/{id}','delete');
 });
+
+Route::prefix('client')->group(function () {
+    Route::controller(ClientOrderController::class)->prefix('order')->group(function () {
+        Route::post('/request','addOrder')->middleware('auth:client');
+    });
+});
+

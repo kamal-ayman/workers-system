@@ -19,7 +19,7 @@ abstract class AbstractFileCommand extends Command
         }
     }
     public function className() {
-        $class_name = $this->argument('CLASS_NAME');
+        $class_name = $this->argument('CLASS_NAME') . $this->suffix_name;
         return ucwords(Pluralizer::singular($class_name));
     }
     public function stubVars() {
@@ -39,7 +39,7 @@ abstract class AbstractFileCommand extends Command
         return $content;
     }
     public function getFilePath() {
-        return base_path('App\\'. $this->folder_path .'\\') . $this->className() . $this->suffix_name . '.php';
+        return base_path('App\\'. $this->folder_path .'\\') . $this->className() . '.php';
     }    public function generateFile($filePath) {
         $content = $this->stubContent();
         $this->file->put($filePath, $content);
