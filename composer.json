@@ -11,10 +11,10 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "spatie/laravel-backup": "^8.5",
+        "spatie/laravel-query-builder": "^5.7",
         "symfony/http-client": "^7.0",
         "symfony/mailgun-mailer": "^7.0",
-        "tymon/jwt-auth": "^2.0",
-        "yousefpackage/lara-backup": "^1.0"
+        "tymon/jwt-auth": "^2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

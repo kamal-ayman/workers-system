@@ -68,14 +68,6 @@ class WorkerController extends Controller
         return $this->createNewToken(auth()->guard('worker')->refresh());
     }
     /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function userProfile() {
-        return response()->json(auth()->guard('worker')->user());
-    }
-    /**
      * Get the token array structure.
      *
      * @param  string $token

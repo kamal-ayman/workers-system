@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminDashboard\AdminNotificationController;
 use App\Http\Controllers\AdminDashboard\PostStatusController;
 use App\Http\Controllers\ClientOrderController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\WorkerReviewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,7 +44,16 @@ Route::prefix('auth')->group(function () {
         Route::get('/user-profile', 'userProfile');
     });
 });
-Route::middleware('auth:worker')->get('worker/orders/pending', [ClientOrderController::class, 'workerOrder']);
+Route::prefix('worker/orders/')->group(function () {
+    Route::middleware('auth:worker')->group(function ($router) {
+        Route::get('pending', [ClientOrderController::class, 'workerOrder']);
+        Route::put('update/{id}', [ClientOrderController::class, 'updateOrder']);
+    });
+    Route::prefix('review')->group(function ($router) {
+        Route::post('/add', [WorkerReviewController::class,'store'])->middleware('auth:client');
+        Route::get('/post/{postId}', [WorkerReviewController::class,'postRate']);
+    });
+});
 
 Route::get('/unauthorized', function () {
     return response()->json([
@@ -52,7 +62,7 @@ Route::get('/unauthorized', function () {
 })->name('login');
 
 
-Route::controller(PostController::class)->prefix('worker/post')->group(function () {
+Route::prefix('worker/post')->controller(PostController::class)->group(function () {
     Route::post('/add','store')->middleware('auth:worker');
     Route::get('/index','index')->middleware('auth:admin');
     Route::get('/approved','approved');

@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use AbstractFileCommand;
+use FileCommand;
 
-class InterfaceCommand extends AbstractFileCommand
+class InterfaceCommand extends FileCommand
 {
     protected $signature = 'make:interface {CLASS_NAME} {--force}';
     protected $description = 'create new interface';

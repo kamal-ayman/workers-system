@@ -2,7 +2,7 @@
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Pluralizer;
-abstract class AbstractFileCommand extends Command
+abstract class FileCommand extends Command
 {
     protected $file, $stub_name, $folder_path, $suffix_name;
     public function __construct($stub_name, $folder_path, $suffix_name) {

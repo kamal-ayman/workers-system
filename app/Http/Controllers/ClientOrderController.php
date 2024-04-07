@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Client\ClientOrderRequest;
+use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Interfaces\CrudRepoInterface;
 use App\Models\ClientOrder;
 use Illuminate\Http\Request;
@@ -24,4 +25,12 @@ class ClientOrderController extends Controller
             "orders"=> $orders
         ]);
     }
+    public function updateOrder($id, Request $request) {
+        $order = ClientOrder::findOrFail($id);
+        $order->setAttribute('status', $request->status)->save();
+        return response()->json([
+            'message'=> 'updated successfully!'
+        ]);
+    }
+
 }
